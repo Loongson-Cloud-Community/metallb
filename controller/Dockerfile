@@ -1,6 +1,6 @@
-# syntax=docker/dockerfile:1.2
+# syntax=docker/dockerfile:1.9
 
-FROM --platform=$BUILDPLATFORM docker.io/golang:1.24.3 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.24 AS builder
 WORKDIR $GOPATH/go.universe.tf/metallb
 
 RUN --mount=type=cache,target=/go/pkg/mod/ \
@@ -34,7 +34,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
   -ldflags "-X 'go.universe.tf/metallb/internal/version.gitCommit=${GIT_COMMIT}' -X 'go.universe.tf/metallb/internal/version.gitBranch=${GIT_BRANCH}'" \
   ./controller
 
-FROM gcr.io/distroless/static:latest
+FROM distroless/static-debian12:latest
 
 COPY --from=builder /build/controller /controller
 COPY LICENSE /
